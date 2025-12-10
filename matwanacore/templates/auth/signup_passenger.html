@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Passenger Signup</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+<div class="container">
+  <div class="image"></div>
+  <div class="content">
+    <div class="signupform">
+      <h3>Passenger Signup</h3>
+      <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="tel" name="phone" placeholder="Phone">
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="submit" value="Sign Up">
+      </form>
+      <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

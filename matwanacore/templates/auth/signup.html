@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matwana Sign Up</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="image"></div>
+
+    <div class="content">
+        <div class="signupform">
+            <img src="{% static 'images/logo.png' %}" style="height:100px;">
+            <p>Create Your Matwana Account</p>
+
+            <!-- User selects role first -->
+            <div class="role-selection">
+                <p>Select your role:</p>
+                <ul>
+                    <li><a href="{% url 'signup_passenger' %}">Passenger</a></li>
+                    <li><a href="{% url 'signup_driver' %}">Driver</a></li>
+                    <li><a href="{% url 'signup_conductor' %}">Conductor</a></li>
+                    <li><a href="{% url 'signup_admin' %}">Sacco Admin</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

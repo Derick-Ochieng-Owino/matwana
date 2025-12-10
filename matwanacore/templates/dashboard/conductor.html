@@ -1,0 +1,26 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Conductor Dashboard{% endblock %}
+
+{% block sidebar_links %}
+<a href="#">Dashboard</a>
+<a href="#">Check Passengers</a>
+<a href="#">Seat Management</a>
+<a href="/logout/">Logout</a>
+{% endblock %}
+
+{% block content %}
+
+<h1>Conductor Dashboard</h1>
+
+<div class="card">
+    <h2>Passenger Verification</h2>
+    <p>Will show QR/booking list.</p>
+</div>
+
+<div class="card">
+    <h2>Seat Management</h2>
+    <p>Will show seat availability.</p>
+</div>
+
+{% endblock %}

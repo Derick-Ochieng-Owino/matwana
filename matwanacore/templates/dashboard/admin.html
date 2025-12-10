@@ -1,0 +1,29 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Sacco Admin Dashboard{% endblock %}
+
+{% block sidebar_links %}
+<a href="#">Dashboard</a>
+<a href="#">Manage Routes</a>
+<a href="#">Manage Matatus</a>
+<a href="#">Drivers & Conductors</a>
+<a href="/logout/">Logout</a>
+{% endblock %}
+
+{% block content %}
+
+<h1>Sacco Admin Dashboard</h1>
+
+<div class="card">
+    <h2>System Overview</h2>
+    <p>Matatus, routes, driver assignments.</p>
+</div>
+
+<div class="card">
+    <h2>Quick Actions</h2>
+    <a class="btn" href="#">Add New Route</a>
+    <a class="btn" href="#">Register Matatu</a>
+    <a class="btn" href="#">Assign Driver</a>
+</div>
+
+{% endblock %}

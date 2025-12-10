@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sign up - choose role</title>
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+<div class="container">
+  <div class="image"></div>
+  <div class="content">
+    <div class="signupform">
+      <img src="{% static 'images/logo.png' %}" alt="logo" style="height:80px;">
+      <p>Create account — choose role</p>
+      <ul style="list-style:none; padding:0;">
+        <li><a href="{% url 'signup_passenger' %}">Passenger</a></li>
+        <li><a href="{% url 'signup_driver' %}">Driver</a></li>
+        <li><a href="{% url 'signup_conductor' %}">Conductor</a></li>
+        <li><a href="{% url 'signup_admin' %}">Sacco Admin</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

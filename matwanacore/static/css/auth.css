@@ -1,0 +1,143 @@
+body {
+    text-align: center;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.image {
+    flex: 1;
+    background: url('https://scontent-mba2-1.cdninstagram.com/v/t51.82787-15/569252314_18325782625211114_967618058413044946_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ig_cache_key=Mzc1MTc3NzY3OTIzNTEwMjkxMQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjIxNDJ4MTQ0MC5zZHIuQzMifQ%3D%3D&_nc_ohc=eQ7FlNhKOcEQ7kNvwGDSgY7&_nc_oc=Adn9JyGSLdJgqMOWv6lTs3FmapC6SfTkdANiM7dWvWVlxipOH0CYYoTYHjdUjwB8sA8&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-mba2-1.cdninstagram.com&_nc_gid=Q2eyqubDdWYoF62Uo4rFNw&oh=00_AfnRZEWvFh0FHimUxGD0dyMFVkM6KxUOdPyoZ81d3j4fjQ&oe=693D91D8') no-repeat center center;
+    background-size: cover;
+    filter: brightness(0.9);
+    position: relative;
+}
+
+.image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(106, 17, 203, 0.3), rgba(37, 117, 252, 0.3));
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+}
+
+.signupform, .loginform {
+    padding: 50px 40px;
+    background: #ffffff;
+    border: none;
+    border-radius: 20px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+    transition: transform 0.3s ease;
+}
+
+.signupform:hover, .loginform:hover {
+    transform: translateY(-5px);
+}
+
+h2 {
+    color: #2d3436;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+input, select {
+    width: 100%;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background: #f8f9fa;
+    font-size: 16px;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #6c5ce7;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+input[type=submit] {
+    background: linear-gradient(to right, #6c5ce7, #a29bfe);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+    padding: 18px;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+input[type=submit]:hover {
+    background: linear-gradient(to right, #5a4fcf, #8a7ef9);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(108, 92, 231, 0.4);
+}
+
+input[type=submit]:active {
+    transform: translateY(0);
+}
+
+.form-footer {
+    margin-top: 25px;
+    color: #636e72;
+    font-size: 14px;
+}
+
+.form-footer a {
+    color: #6c5ce7;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .image {
+        flex: 0 0 200px;
+    }
+    
+    .signupform, .loginform {
+        margin: 20px;
+        padding: 35px 25px;
+    }
+}

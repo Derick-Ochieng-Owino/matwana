@@ -1,0 +1,26 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Driver Dashboard{% endblock %}
+
+{% block sidebar_links %}
+<a href="#">Dashboard</a>
+<a href="#">My Matatu</a>
+<a href="#">Today's Bookings</a>
+<a href="/logout/">Logout</a>
+{% endblock %}
+
+{% block content %}
+
+<h1>Driver Dashboard</h1>
+
+<div class="card">
+    <h2>Your Assigned Matatu</h2>
+    <p>Will display matatu registration, route, and conductor.</p>
+</div>
+
+<div class="card">
+    <h2>Today's Passenger List</h2>
+    <p>No bookings yet.</p>
+</div>
+
+{% endblock %}
