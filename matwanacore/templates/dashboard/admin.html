@@ -1,29 +1,1545 @@
-{% extends 'base_dashboard.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Matwana</title>
+  <style>
+    /* Base Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-{% block title %}Sacco Admin Dashboard{% endblock %}
+    /* Dashboard Container */
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
 
-{% block sidebar_links %}
-<a href="#">Dashboard</a>
-<a href="#">Manage Routes</a>
-<a href="#">Manage Matatus</a>
-<a href="#">Drivers & Conductors</a>
-<a href="/logout/">Logout</a>
-{% endblock %}
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: rgba(255, 255, 255, 0.98);
+      padding: 30px 20px;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
 
-{% block content %}
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e9ecef;
+    }
 
-<h1>Sacco Admin Dashboard</h1>
+    .admin-logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
 
-<div class="card">
-    <h2>System Overview</h2>
-    <p>Matatus, routes, driver assignments.</p>
-</div>
+    .admin-info h3 {
+      margin: 0;
+      color: #1e3c72;
+      font-size: 20px;
+    }
 
-<div class="card">
-    <h2>Quick Actions</h2>
-    <a class="btn" href="#">Add New Route</a>
-    <a class="btn" href="#">Register Matatu</a>
-    <a class="btn" href="#">Assign Driver</a>
-</div>
+    .admin-info p {
+      margin: 5px 0 0 0;
+      color: #6c757d;
+      font-size: 14px;
+    }
 
-{% endblock %}
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      margin: 8px 0;
+      color: #495057;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 16px;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar a:hover {
+      background: rgba(30, 60, 114, 0.1);
+      border-left-color: #1e3c72;
+      color: #1e3c72;
+      transform: translateX(5px);
+    }
+
+    .sidebar a.active {
+      background: rgba(30, 60, 114, 0.15);
+      border-left-color: #1e3c72;
+      color: #1e3c72;
+      font-weight: 600;
+    }
+
+    .sidebar a i {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .sidebar .divider {
+      height: 1px;
+      background: #e9ecef;
+      margin: 20px 0;
+    }
+
+    .sidebar a:last-child {
+      margin-top: auto;
+      background: linear-gradient(to right, #dc3545, #c82333);
+      color: white;
+      justify-content: center;
+      border: none;
+    }
+
+    .sidebar a:last-child:hover {
+      background: linear-gradient(to right, #c82333, #bd2130);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 40px;
+      background: #f8f9fa;
+      overflow-y: auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding: 25px 30px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .header h1 {
+      color: #1e3c72;
+      font-size: 36px;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .date-display {
+      background: #1e3c72;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: white;
+    }
+
+    .icon-saccos { background: linear-gradient(135deg, #1e3c72, #2a5298); }
+    .icon-drivers { background: linear-gradient(135deg, #28a745, #20c997); }
+    .icon-conductors { background: linear-gradient(135deg, #ffc107, #fd7e14); }
+    .icon-revenue { background: linear-gradient(135deg, #e83e8c, #dc3545); }
+    .icon-users { background: linear-gradient(135deg, #17a2b8, #007bff); }
+    .icon-transactions { background: linear-gradient(135deg, #6f42c1, #6610f2); }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e3c72;
+      margin: 10px 0;
+    }
+
+    .stat-label {
+      color: #6c757d;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .stat-change {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .change-positive { color: #28a745; }
+    .change-negative { color: #dc3545; }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .quick-action-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .quick-action-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(30, 60, 114, 0.15);
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+    }
+
+    .quick-action-card:hover .quick-action-icon {
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .quick-action-icon {
+      font-size: 36px;
+      color: #1e3c72;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .quick-action-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .quick-action-desc {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    /* Management Section */
+    .management-section {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .section-header h2 {
+      color: #1e3c72;
+      font-size: 24px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .add-button {
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .add-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .modal-header h3 {
+      color: #1e3c72;
+      font-size: 24px;
+      margin: 0;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6c757d;
+      transition: color 0.3s ease;
+    }
+
+    .close-modal:hover {
+      color: #dc3545;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #495057;
+      font-weight: 500;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #1e3c72;
+      box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .submit-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+    }
+
+    /* Data Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table thead {
+      background: #f8f9fa;
+    }
+
+    .data-table th {
+      padding: 15px;
+      text-align: left;
+      color: #495057;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .data-table td {
+      padding: 15px;
+      border-bottom: 1px solid #e9ecef;
+      color: #495057;
+    }
+
+    .data-table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .data-table tbody tr:hover {
+      background: #f8f9fa;
+      transform: translateX(5px);
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-active { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+    .status-pending { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+    .status-inactive { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .btn-view { background: rgba(0, 123, 255, 0.1); color: #007bff; }
+    .btn-edit { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+    .btn-delete { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #e9ecef;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 15px 30px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      color: #6c757d;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tab:hover {
+      color: #1e3c72;
+    }
+
+    .tab.active {
+      color: #1e3c72;
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #1e3c72;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .dashboard-container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        padding: 20px;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      
+      .sidebar-header {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      
+      .sidebar a {
+        margin: 5px;
+        flex: 1;
+        min-width: 150px;
+      }
+      
+      .main-content {
+        padding: 30px 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .tabs {
+        flex-direction: column;
+      }
+      
+      .tab {
+        width: 100%;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+    }
+
+    /* Animations */
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #1e3c72, #2a5298);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, #2a5298, #1e3c72);
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="admin-logo">MA</div>
+        <div class="admin-info">
+          <h3>Matwana Admin</h3>
+          <p>Platform Administrator</p>
+        </div>
+      </div>
+
+      <a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="#"><i class="fas fa-building"></i> Sacco Management</a>
+      <a href="#"><i class="fas fa-user-tie"></i> Drivers</a>
+      <a href="#"><i class="fas fa-clipboard-check"></i> Conductors</a>
+      <a href="#"><i class="fas fa-route"></i> Routes</a>
+      <a href="#"><i class="fas fa-chart-line"></i> Analytics</a>
+      
+      <div class="divider"></div>
+      
+      <a href="#"><i class="fas fa-user-shield"></i> User Management</a>
+      <a href="#"><i class="fas fa-cog"></i> System Settings</a>
+      <a href="#"><i class="fas fa-file-invoice"></i> Audit Logs</a>
+      <a href="/logout/"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <h1>Admin Dashboard</h1>
+        <div class="header-controls">
+          <div class="date-display">
+            <i class="fas fa-calendar-alt"></i>
+            <span id="currentDate"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Overview -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon icon-saccos">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Registered Saccos</div>
+          <div class="stat-change change-positive">
+            <i class="fas fa-plus"></i>
+            <span>2 new this month</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-drivers">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <div class="stat-value">156</div>
+          <div class="stat-label">Active Drivers</div>
+          <div class="stat-change change-positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>8.3% increase</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-conductors">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <div class="stat-value">178</div>
+          <div class="stat-label">Active Conductors</div>
+          <div class="stat-change change-positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>5.7% increase</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-revenue">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="stat-value">KES 8.2M</div>
+          <div class="stat-label">Platform Revenue</div>
+          <div class="stat-change change-positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>15.2% increase</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="quick-action-card" onclick="openAddSaccoModal()">
+          <div class="quick-action-icon">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="quick-action-title">Add New Sacco</div>
+          <div class="quick-action-desc">Register a new transport Sacco</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="openAddDriverModal()">
+          <div class="quick-action-icon">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <div class="quick-action-title">Add Driver</div>
+          <div class="quick-action-desc">Register new driver to Sacco</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="openAddConductorModal()">
+          <div class="quick-action-icon">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <div class="quick-action-title">Add Conductor</div>
+          <div class="quick-action-desc">Register new conductor to Sacco</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="generatePlatformReport()">
+          <div class="quick-action-icon">
+            <i class="fas fa-file-pdf"></i>
+          </div>
+          <div class="quick-action-title">Platform Report</div>
+          <div class="quick-action-desc">Generate system-wide report</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="management-section">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('saccos')">Sacco Management</button>
+          <button class="tab" onclick="switchTab('drivers')">Driver Management</button>
+          <button class="tab" onclick="switchTab('conductors')">Conductor Management</button>
+          <button class="tab" onclick="switchTab('recent')">Recent Activity</button>
+        </div>
+
+        <!-- Sacco Management Tab -->
+        <div id="saccos" class="tab-content active">
+          <div class="section-header">
+            <h2><i class="fas fa-building"></i> Registered Saccos</h2>
+            <button class="add-button" onclick="openAddSaccoModal()">
+              <i class="fas fa-plus"></i> Add Sacco
+            </button>
+          </div>
+          
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Sacco Name</th>
+                <th>Registration No</th>
+                <th>Matatus</th>
+                <th>Drivers</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Matwana Sacco</strong></td>
+                <td>MW/001/2023</td>
+                <td>24</td>
+                <td>48</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view" onclick="viewSacco('MW001')">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit" onclick="editSacco('MW001')">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Metro Trans Sacco</strong></td>
+                <td>MT/002/2023</td>
+                <td>18</td>
+                <td>36</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>City Connect Sacco</strong></td>
+                <td>CC/003/2023</td>
+                <td>15</td>
+                <td>30</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Speed Shuttle Sacco</strong></td>
+                <td>SS/004/2023</td>
+                <td>12</td>
+                <td>24</td>
+                <td><span class="status-badge status-pending">Pending</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Driver Management Tab -->
+        <div id="drivers" class="tab-content">
+          <div class="section-header">
+            <h2><i class="fas fa-user-tie"></i> Driver Management</h2>
+            <button class="add-button" onclick="openAddDriverModal()">
+              <i class="fas fa-plus"></i> Add Driver
+            </button>
+          </div>
+          
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Driver Name</th>
+                <th>Sacco</th>
+                <th>License No</th>
+                <th>Matatu</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>John Kamau</strong></td>
+                <td>Matwana Sacco</td>
+                <td>DL-00123456</td>
+                <td>KCA 123X</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Peter Mwangi</strong></td>
+                <td>Metro Trans Sacco</td>
+                <td>DL-00234567</td>
+                <td>KBB 456Y</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>James Ochieng</strong></td>
+                <td>City Connect Sacco</td>
+                <td>DL-00345678</td>
+                <td>KCD 789Z</td>
+                <td><span class="status-badge status-inactive">On Leave</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Conductor Management Tab -->
+        <div id="conductors" class="tab-content">
+          <div class="section-header">
+            <h2><i class="fas fa-clipboard-check"></i> Conductor Management</h2>
+            <button class="add-button" onclick="openAddConductorModal()">
+              <i class="fas fa-plus"></i> Add Conductor
+            </button>
+          </div>
+          
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Conductor Name</th>
+                <th>Sacco</th>
+                <th>Badge No</th>
+                <th>Matatu</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Samuel Gitonga</strong></td>
+                <td>Matwana Sacco</td>
+                <td>CB-00123</td>
+                <td>KCA 123X</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Grace Wanjiru</strong></td>
+                <td>Metro Trans Sacco</td>
+                <td>CB-00234</td>
+                <td>KBB 456Y</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>David Njoroge</strong></td>
+                <td>City Connect Sacco</td>
+                <td>CB-00345</td>
+                <td>KCD 789Z</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="action-btn btn-view">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Recent Activity Tab -->
+        <div id="recent" class="tab-content">
+          <div class="section-header">
+            <h2><i class="fas fa-history"></i> Recent System Activity</h2>
+          </div>
+          
+          <div class="activity-list" style="max-height: 400px; overflow-y: auto;">
+            <div class="activity-item" style="display: flex; gap: 15px; padding: 20px; border-bottom: 1px solid #e9ecef;">
+              <div class="activity-icon" style="width: 50px; height: 50px; background: linear-gradient(135deg, #28a745, #20c997); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                <i class="fas fa-building"></i>
+              </div>
+              <div class="activity-content">
+                <h4 style="margin: 0 0 5px 0; color: #1e3c72;">New Sacco Registered</h4>
+                <p style="margin: 0; color: #6c757d;">Speed Shuttle Sacco registered by Admin</p>
+                <div class="activity-time" style="color: #adb5bd; font-size: 12px; margin-top: 5px;">2 hours ago</div>
+              </div>
+            </div>
+            
+            <div class="activity-item" style="display: flex; gap: 15px; padding: 20px; border-bottom: 1px solid #e9ecef;">
+              <div class="activity-icon" style="width: 50px; height: 50px; background: linear-gradient(135deg, #007bff, #17a2b8); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                <i class="fas fa-user-plus"></i>
+              </div>
+              <div class="activity-content">
+                <h4 style="margin: 0 0 5px 0; color: #1e3c72;">New Driver Added</h4>
+                <p style="margin: 0; color: #6c757d;">Samuel Gitonga added to Matwana Sacco</p>
+                <div class="activity-time" style="color: #adb5bd; font-size: 12px; margin-top: 5px;">1 day ago</div>
+              </div>
+            </div>
+            
+            <div class="activity-item" style="display: flex; gap: 15px; padding: 20px; border-bottom: 1px solid #e9ecef;">
+              <div class="activity-icon" style="width: 50px; height: 50px; background: linear-gradient(135deg, #ffc107, #fd7e14); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                <i class="fas fa-user-plus"></i>
+              </div>
+              <div class="activity-content">
+                <h4 style="margin: 0 0 5px 0; color: #1e3c72;">New Conductor Added</h4>
+                <p style="margin: 0; color: #6c757d;">Grace Wanjiru added to Metro Trans Sacco</p>
+                <div class="activity-time" style="color: #adb5bd; font-size: 12px; margin-top: 5px;">2 days ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Sacco Modal -->
+  <div id="addSaccoModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fas fa-building"></i> Add New Sacco</h3>
+        <button class="close-modal" onclick="closeModal('addSaccoModal')">&times;</button>
+      </div>
+      
+      <form id="saccoForm" onsubmit="submitSaccoForm(event)">
+        <div class="form-group">
+          <label for="saccoName">Sacco Name *</label>
+          <input type="text" id="saccoName" class="form-control" required placeholder="Enter sacco name">
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="registrationNo">Registration Number *</label>
+            <input type="text" id="registrationNo" class="form-control" required placeholder="e.g., MW/001/2023">
+          </div>
+          
+          <div class="form-group">
+            <label for="saccoEmail">Email Address *</label>
+            <input type="email" id="saccoEmail" class="form-control" required placeholder="contact@sacco.com">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number *</label>
+            <input type="tel" id="phoneNumber" class="form-control" required placeholder="07XX XXX XXX">
+          </div>
+          
+          <div class="form-group">
+            <label for="physicalAddress">Physical Address</label>
+            <input type="text" id="physicalAddress" class="form-control" placeholder="Enter physical address">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="adminContact">Admin Contact Person *</label>
+          <input type="text" id="adminContact" class="form-control" required placeholder="Name of contact person">
+        </div>
+        
+        <div class="form-group">
+          <label for="saccoDescription">Description</label>
+          <textarea id="saccoDescription" class="form-control" rows="3" placeholder="Brief description of the sacco"></textarea>
+        </div>
+        
+        <button type="submit" class="submit-button">Register Sacco</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Driver Modal -->
+  <div id="addDriverModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fas fa-user-tie"></i> Add New Driver</h3>
+        <button class="close-modal" onclick="closeModal('addDriverModal')">&times;</button>
+      </div>
+      
+      <form id="driverForm" onsubmit="submitDriverForm(event)">
+        <div class="form-group">
+          <label for="driverSacco">Select Sacco *</label>
+          <select id="driverSacco" class="form-control" required>
+            <option value="">Choose a sacco</option>
+            <option value="MW001">Matwana Sacco</option>
+            <option value="MT002">Metro Trans Sacco</option>
+            <option value="CC003">City Connect Sacco</option>
+            <option value="SS004">Speed Shuttle Sacco</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="driverFirstName">First Name *</label>
+            <input type="text" id="driverFirstName" class="form-control" required placeholder="First name">
+          </div>
+          
+          <div class="form-group">
+            <label for="driverLastName">Last Name *</label>
+            <input type="text" id="driverLastName" class="form-control" required placeholder="Last name">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="driverID">National ID *</label>
+            <input type="text" id="driverID" class="form-control" required placeholder="ID number">
+          </div>
+          
+          <div class="form-group">
+            <label for="driverPhone">Phone Number *</label>
+            <input type="tel" id="driverPhone" class="form-control" required placeholder="07XX XXX XXX">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="driverLicense">License Number *</label>
+            <input type="text" id="driverLicense" class="form-control" required placeholder="DL-XXXXXX">
+          </div>
+          
+          <div class="form-group">
+            <label for="licenseExpiry">License Expiry *</label>
+            <input type="date" id="licenseExpiry" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="driverEmail">Email Address</label>
+          <input type="email" id="driverEmail" class="form-control" placeholder="driver@email.com">
+        </div>
+        
+        <div class="form-group">
+          <label for="assignedMatatu">Assign to Matatu (Optional)</label>
+          <select id="assignedMatatu" class="form-control">
+            <option value="">Not assigned yet</option>
+            <option value="KCA123X">KCA 123X</option>
+            <option value="KBB456Y">KBB 456Y</option>
+            <option value="KCD789Z">KCD 789Z</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="submit-button">Register Driver</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Conductor Modal -->
+  <div id="addConductorModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fas fa-clipboard-check"></i> Add New Conductor</h3>
+        <button class="close-modal" onclick="closeModal('addConductorModal')">&times;</button>
+      </div>
+      
+      <form id="conductorForm" onsubmit="submitConductorForm(event)">
+        <div class="form-group">
+          <label for="conductorSacco">Select Sacco *</label>
+          <select id="conductorSacco" class="form-control" required>
+            <option value="">Choose a sacco</option>
+            <option value="MW001">Matwana Sacco</option>
+            <option value="MT002">Metro Trans Sacco</option>
+            <option value="CC003">City Connect Sacco</option>
+            <option value="SS004">Speed Shuttle Sacco</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="conductorFirstName">First Name *</label>
+            <input type="text" id="conductorFirstName" class="form-control" required placeholder="First name">
+          </div>
+          
+          <div class="form-group">
+            <label for="conductorLastName">Last Name *</label>
+            <input type="text" id="conductorLastName" class="form-control" required placeholder="Last name">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="conductorID">National ID *</label>
+            <input type="text" id="conductorID" class="form-control" required placeholder="ID number">
+          </div>
+          
+          <div class="form-group">
+            <label for="conductorPhone">Phone Number *</label>
+            <input type="tel" id="conductorPhone" class="form-control" required placeholder="07XX XXX XXX">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="badgeNumber">Badge Number *</label>
+            <input type="text" id="badgeNumber" class="form-control" required placeholder="CB-XXXXX">
+          </div>
+          
+          <div class="form-group">
+            <label for="conductorEmail">Email Address</label>
+            <input type="email" id="conductorEmail" class="form-control" placeholder="conductor@email.com">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="conductorExperience">Experience (Years)</label>
+          <input type="number" id="conductorExperience" class="form-control" min="0" max="50" placeholder="Years of experience">
+        </div>
+        
+        <div class="form-group">
+          <label for="assignedToMatatu">Assign to Matatu (Optional)</label>
+          <select id="assignedToMatatu" class="form-control">
+            <option value="">Not assigned yet</option>
+            <option value="KCA123X">KCA 123X</option>
+            <option value="KBB456Y">KBB 456Y</option>
+            <option value="KCD789Z">KCD 789Z</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="submit-button">Register Conductor</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+
+  // Tab switching
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  // Modal handling
+  function openAddSaccoModal() { document.getElementById('addSaccoModal').style.display = 'flex'; }
+  function openAddDriverModal() { document.getElementById('addDriverModal').style.display = 'flex'; }
+  function openAddConductorModal() { document.getElementById('addConductorModal').style.display = 'flex'; }
+  function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+  // Example form submission handlers
+  function submitSaccoForm(e) { e.preventDefault(); alert('Sacco submitted!'); closeModal('addSaccoModal'); }
+  function submitDriverForm(e) { e.preventDefault(); alert('Driver submitted!'); closeModal('addDriverModal'); }
+  function submitConductorForm(e) { e.preventDefault(); alert('Conductor submitted!'); closeModal('addConductorModal'); }
+
+    // Update current date
+    function updateCurrentDate() {
+      const now = new Date();
+      const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      };
+      document.getElementById('currentDate').textContent = 
+        now.toLocaleDateString('en-US', options);
+    }
+    
+    // Initialize date on load
+    updateCurrentDate();
+    
+    // Tab switching
+    function switchTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      document.getElementById(tabName).classList.add('active');
+      
+      // Activate selected tab
+      event.target.classList.add('active');
+    }
+    
+    // Modal functions
+    function openAddSaccoModal() {
+      document.getElementById('addSaccoModal').style.display = 'flex';
+    }
+    
+    function openAddDriverModal() {
+      document.getElementById('addDriverModal').style.display = 'flex';
+    }
+    
+    function openAddConductorModal() {
+      document.getElementById('addConductorModal').style.display = 'flex';
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      const modals = ['addSaccoModal', 'addDriverModal', 'addConductorModal'];
+      modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    });
+    
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const colors = {
+        success: '#28a745',
+        error: '#dc3545',
+        warning: '#ffc107',
+        info: '#17a2b8'
+      };
+      
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: white;
+        color: #2d3436;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        z-index: 1000;
+        font-weight: 600;
+        border-left: 4px solid ${colors[type]};
+        animation: slideIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 350px;
+      `;
+      
+      const icon = type === 'success' ? 'fa-check-circle' : 
+                  type === 'error' ? 'fa-exclamation-circle' : 
+                  type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+      
+      notification.innerHTML = `
+        <i class="fas ${icon}" style="color: ${colors[type]}"></i>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+    
+    // Form submissions
+    function submitSaccoForm(event) {
+      event.preventDefault();
+      
+      const saccoName = document.getElementById('saccoName').value;
+      
+      // Simulate API call
+      showNotification(`Registering ${saccoName}...`, 'info');
+      
+      setTimeout(() => {
+        closeModal('addSaccoModal');
+        document.getElementById('saccoForm').reset();
+        showNotification(`${saccoName} successfully registered!`, 'success');
+        
+        // Refresh the sacco list (in real app would fetch from API)
+        setTimeout(() => {
+          switchTab('saccos');
+        }, 500);
+      }, 1500);
+    }
+    
+    function submitDriverForm(event) {
+      event.preventDefault();
+      
+      const firstName = document.getElementById('driverFirstName').value;
+      const lastName = document.getElementById('driverLastName').value;
+      const sacco = document.getElementById('driverSacco').selectedOptions[0].text;
+      
+      showNotification(`Registering ${firstName} ${lastName}...`, 'info');
+      
+      setTimeout(() => {
+        closeModal('addDriverModal');
+        document.getElementById('driverForm').reset();
+        showNotification(`${firstName} ${lastName} added to ${sacco} successfully!`, 'success');
+        
+        setTimeout(() => {
+          switchTab('drivers');
+        }, 500);
+      }, 1500);
+    }
+    
+    function submitConductorForm(event) {
+      event.preventDefault();
+      
+      const firstName = document.getElementById('conductorFirstName').value;
+      const lastName = document.getElementById('conductorLastName').value;
+      const sacco = document.getElementById('conductorSacco').selectedOptions[0].text;
+      
+      showNotification(`Registering ${firstName} ${lastName}...`, 'info');
+      
+      setTimeout(() => {
+        closeModal('addConductorModal');
+        document.getElementById('conductorForm').reset();
+        showNotification(`${firstName} ${lastName} added to ${sacco} successfully!`, 'success');
+        
+        setTimeout(() => {
+          switchTab('conductors');
+        }, 500);
+      }, 1500);
+    }
+    
+    // Other functions
+    function viewSacco(saccoId) {
+      showNotification(`Viewing details for Sacco ID: ${saccoId}`, 'info');
+    }
+    
+    function editSacco(saccoId) {
+      showNotification(`Editing Sacco ID: ${saccoId}`, 'info');
+    }
+    
+    function generatePlatformReport() {
+      showNotification('Generating platform-wide report...', 'info');
+      setTimeout(() => {
+        showNotification('Platform report generated successfully!', 'success');
+      }, 2000);
+    }
+    
+    // Add CSS for animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Set license expiry to future date
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date();
+      const futureDate = new Date(today);
+      futureDate.setFullYear(today.getFullYear() + 3);
+      document.getElementById('licenseExpiry').value = futureDate.toISOString().split('T')[0];
+    });
+  </script>
+</body>
+</html>

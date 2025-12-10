@@ -74,15 +74,14 @@ def sacco_admin_signup(request):
 
 @login_required
 def dashboard(request):
-    try:
-        profile = request.user.matwanauser
-    except Exception:
-        print("DEBUG: MatwanaUser profile not found!") # Print this line
-        return redirect('login')
-    
-    # 🚨 Add this temporary print statement to see the actual role
-    print(f"DEBUG: User role is '{profile.role}'") 
-    
+    # Guaranteed MatwanaUser exists
+    profile, created = MatwanaUser.objects.get_or_create(
+        user=request.user,
+        defaults={"role": "passenger"}  # or default role
+    )
+
+    print(f"DEBUG: User role is '{profile.role}'")
+
     if profile.role == 'passenger':
         return redirect('passenger_dashboard')
     if profile.role == 'driver':
@@ -91,10 +90,9 @@ def dashboard(request):
         return redirect('conductor_dashboard')
     if profile.role == 'admin':
         return redirect('admin_dashboard')
-    
-    # ⚠️ CHANGE THIS LINE: Redirect to an error/default page instead of login
-    # Create a generic error template (e.g., 'dashboard/role_error.html')
+
     return render(request, "dashboard/role_error.html", {"error": "User role is invalid or missing."})
+
 
 @login_required
 def passenger_dashboard(request):
@@ -108,6 +106,10 @@ def driver_dashboard(request):
 @login_required
 def conductor_dashboard(request):
     return render(request, "dashboard/conductor.html")
+
+@login_required
+def sacco_dashboard(request):
+    return render(request, "dashboard/sacco.html")
 
 @login_required
 def admin_dashboard(request):

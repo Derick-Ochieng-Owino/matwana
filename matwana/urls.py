@@ -5,7 +5,7 @@ from matwanacore.views import (
     passenger_signup, driver_signup, conductor_signup,
     sacco_admin_signup, login_view, dashboard,
     passenger_dashboard, driver_dashboard, conductor_dashboard, admin_dashboard,
-    forgot_password
+    forgot_password, sacco_dashboard
 )
 
 urlpatterns = [
@@ -26,6 +26,7 @@ urlpatterns = [
     path("dashboard/driver/", driver_dashboard, name="driver_dashboard"),
     path("dashboard/conductor/", conductor_dashboard, name="conductor_dashboard"),
     path("dashboard/admin/", admin_dashboard, name="admin_dashboard"),
+    path("dashboard/sacco/", sacco_dashboard, name="sacco_dashboard"),
 
     path("forgot_password/", forgot_password, name="forgot_password"),
 ]
