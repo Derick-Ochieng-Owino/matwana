@@ -5,330 +5,235 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Matwana - Select Your Role</title>
-    <style>
-        /* Enhanced styling to match your dashboard designs */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        body, html {
-            height: 100%;
-            margin: 0;
-        }
-
-        .container {
-            display: flex;
-            height: 100vh;
-            width: 100%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .image {
-            flex: 1;
-            background: url('{% static "images/auth-bg.jpg" %}') no-repeat center center;
-            background-size: cover;
-            filter: brightness(0.9);
-            position: relative;
-        }
-
-        .image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(106, 17, 203, 0.3), rgba(37, 117, 252, 0.3));
-        }
-
-        .content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8f9fa;
-        }
-
-        .signupform {
-            padding: 50px 40px;
-            background: #ffffff;
-            border: none;
-            border-radius: 25px;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(50, 50, 93, 0.15), 0 10px 25px rgba(0, 0, 0, 0.07);
-            transition: transform 0.3s ease;
-        }
-
-        .signupform:hover {
-            transform: translateY(-5px);
-        }
-
-        .logo {
-            height: 80px;
-            margin-bottom: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        h1 {
-            color: #2d3436;
-            margin-bottom: 10px;
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            color: #636e72;
-            margin-bottom: 40px;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-
-        .role-selection {
-            margin-top: 30px;
-        }
-
-        .role-selection p {
-            color: #2d3436;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 25px;
-        }
-
-        .role-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .role-card {
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            padding: 25px 20px;
-            text-decoration: none;
-            color: #2d3436;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            min-height: 140px;
-        }
-
-        .role-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(108, 92, 231, 0.15);
-            border-color: #6c5ce7;
-            background: white;
-        }
-
-        .role-icon {
-            font-size: 32px;
-            margin-bottom: 15px;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(108, 92, 231, 0.1);
-            color: #6c5ce7;
-        }
-
-        .role-card.passenger .role-icon {
-            background: rgba(0, 123, 255, 0.1);
-            color: #007bff;
-        }
-
-        .role-card.driver .role-icon {
-            background: rgba(40, 167, 69, 0.1);
-            color: #28a745;
-        }
-
-        .role-card.conductor .role-icon {
-            background: rgba(255, 193, 7, 0.1);
-            color: #ffc107;
-        }
-
-        .role-card.admin .role-icon {
-            background: rgba(220, 53, 69, 0.1);
-            color: #dc3545;
-        }
-
-        .role-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .role-desc {
-            font-size: 12px;
-            color: #636e72;
-            line-height: 1.4;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #6c5ce7;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: #5a4fcf;
-            text-decoration: underline;
-        }
-
-        .info-box {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-left: 4px solid #6c5ce7;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-top: 30px;
-            text-align: left;
-        }
-
-        .info-box p {
-            margin: 0;
-            color: #495057;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1024px) {
-            .container {
-                flex-direction: column;
-            }
-            
-            .image {
-                flex: 0 0 200px;
-                background-position: center 30%;
-            }
-            
-            .signupform {
-                margin: 20px;
-                padding: 40px 30px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .role-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .role-card {
-                padding: 20px 15px;
-                min-height: 120px;
-            }
-            
-            h1 {
-                font-size: 24px;
-            }
-            
-            .subtitle {
-                font-size: 14px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .signupform {
-                padding: 30px 20px;
-            }
-            
-            .role-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Global Styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    background: #f8f9fa;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Image Section */
+.image {
+    flex: 1;
+    background: url('https://scontent-mba2-1.cdninstagram.com/v/t51.82787-15/569252314_18325782625211114_967618058413044946_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=101&ig_cache_key=Mzc1MTc3NzY3OTIzNTEwMjkxMQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjIxNDJ4MTQ0MC5zZHIuQzMifQ%3D%3D&_nc_ohc=eQ7FlNhKOcEQ7kNvwGDSgY7&_nc_oc=Adn9JyGSLdJgqMOWv6lTs3FmapC6SfTkdANiM7dWvWVlxipOH0CYYoTYHjdUjwB8sA8&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-mba2-1.cdninstagram.com&_nc_gid=Q2eyqubDdWYoF62Uo4rFNw&oh=00_AfnRZEWvFh0FHimUxGD0dyMFVkM6KxUOdPyoZ81d3j4fjQ&oe=693D91D8') no-repeat center center;
+    background-size: cover;
+    filter: brightness(0.9);
+    position: relative;
+}
+
+.image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255, 165, 0, 0.2), rgba(255, 140, 0, 0.2));
+}
+
+.logo {
+    width: 80px;          /* Small width */
+    height: 80px;         /* Small height */
+    border-radius: 50%;   /* Makes it perfectly circular */
+    object-fit: cover;    /* Ensures the image fills the circle without stretching */
+    margin-bottom: 20px;  /* Space below the logo */
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05); /* Slight zoom on hover for subtle effect */
+}
+
+
+/* Content Section */
+.content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+}
+
+/* Form Styles (for both login and signup) */
+.signupform, .loginform {
+    padding: 50px 40px;
+    background: #ffffff;
+    border: none;
+    border-radius: 20px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+    transition: transform 0.3s ease;
+}
+
+.signupform:hover, .loginform:hover {
+    transform: translateY(-5px);
+}
+
+/* Headings */
+h1, h2 {
+    color: #2d3436;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Input Fields */
+input, select {
+    width: 100%;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background: #f8f9fa;
+    font-size: 16px;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #ff7e5f;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 126, 95, 0.1);
+}
+
+/* Submit Button */
+input[type=submit] {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+    padding: 18px;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 126, 95, 0.3);
+}
+
+input[type=submit]:hover {
+    background: linear-gradient(to right, #ff6a3d, #ffb97e);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(255, 126, 95, 0.4);
+}
+
+input[type=submit]:active {
+    transform: translateY(0);
+}
+
+/* Footer Links */
+.form-footer {
+    margin-top: 25px;
+    color: #636e72;
+    font-size: 14px;
+}
+
+.form-footer a {
+    color: #ff7e5f;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .image {
+        flex: 0 0 200px;
+        background-position: center 30%;
+    }
+
+    .signupform, .loginform {
+        margin: 20px;
+        padding: 40px 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .signupform, .loginform {
+        padding: 35px 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    .signupform, .loginform {
+        padding: 30px 20px;
+    }
+}
+
+    </style>
 </head>
 <body>
-
 <div class="container">
-    <!-- Background Image Side -->
     <div class="image"></div>
-
-    <!-- Content Side -->
     <div class="content">
         <div class="signupform">
-            <!-- Logo -->
-            <img src="{% static 'images/logo.png' %}" alt="Matwana Logo" class="logo">
+            <img class="logo" src="{% static 'images/logo.png' %}" alt="Matwana Logo">
             <h1>Welcome to Matwana</h1>
             <p class="subtitle">Join Kenya's premier matatu management platform<br>Select your role to get started</p>
 
-            <!-- Role Selection -->
             <div class="role-selection">
                 <p>Choose your role:</p>
-                
                 <div class="role-grid">
-                    <!-- Passenger Card -->
                     <a href="{% url 'signup_passenger' %}" class="role-card passenger">
-                        <div class="role-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
+                        <div class="role-icon"><i class="fas fa-user"></i></div>
                         <div class="role-name">Passenger</div>
                         <div class="role-desc">Book rides, track matatus, make payments</div>
                     </a>
 
-                    <!-- Driver Card -->
                     <a href="{% url 'signup_driver' %}" class="role-card driver">
-                        <div class="role-icon">
-                            <i class="fas fa-bus"></i>
-                        </div>
+                        <div class="role-icon"><i class="fas fa-bus"></i></div>
                         <div class="role-name">Driver</div>
                         <div class="role-desc">Manage routes, accept bookings, earn money</div>
                     </a>
 
-                    <!-- Conductor Card -->
                     <a href="{% url 'signup_conductor' %}" class="role-card conductor">
-                        <div class="role-icon">
-                            <i class="fas fa-clipboard-check"></i>
-                        </div>
+                        <div class="role-icon"><i class="fas fa-clipboard-check"></i></div>
                         <div class="role-name">Conductor</div>
                         <div class="role-desc">Manage passengers, handle payments, assist riders</div>
                     </a>
 
-                    <!-- Admin Card -->
                     <a href="{% url 'signup_admin' %}" class="role-card admin">
-                        <div class="role-icon">
-                            <i class="fas fa-user-shield"></i>
-                        </div>
+                        <div class="role-icon"><i class="fas fa-user-shield"></i></div>
                         <div class="role-name">Sacco Admin</div>
                         <div class="role-desc">Manage fleet, drivers, conductors, view reports</div>
                     </a>
                 </div>
 
-                <!-- Information Box -->
                 <div class="info-box">
-                    <p><i class="fas fa-info-circle" style="color: #6c5ce7; margin-right: 8px;"></i>
-                    Each role has different registration requirements. You'll be asked to provide specific information relevant to your selected role.</p>
+                    <p><i class="fas fa-info-circle" style="color: #ff7e5f; margin-right: 8px;"></i>
+                        Each role has different registration requirements. You'll be asked to provide information relevant to your role.
+                    </p>
                 </div>
 
-                <!-- Back to Login Link -->
                 <a href="{% url 'login' %}" class="back-link">
                     <i class="fas fa-arrow-left" style="margin-right: 5px;"></i>
                     Back to Login
@@ -339,33 +244,17 @@
 </div>
 
 <script>
-    // Add smooth hover effects
     document.addEventListener('DOMContentLoaded', function() {
         const roleCards = document.querySelectorAll('.role-card');
-        
         roleCards.forEach(card => {
-            // Add keyboard navigation
             card.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    this.click();
-                }
-            });
-            
-            // Add focus styles
-            card.addEventListener('focus', function() {
-                this.style.boxShadow = '0 0 0 3px rgba(108, 92, 231, 0.3)';
-            });
-            
-            card.addEventListener('blur', function() {
-                this.style.boxShadow = '';
+                if (e.key === 'Enter' || e.key === ' ') this.click();
             });
         });
-        
-        // Add a subtle animation on load
+
         const signupForm = document.querySelector('.signupform');
         signupForm.style.opacity = '0';
         signupForm.style.transform = 'translateY(20px)';
-        
         setTimeout(() => {
             signupForm.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
             signupForm.style.opacity = '1';
@@ -373,6 +262,5 @@
         }, 100);
     });
 </script>
-
 </body>
 </html>

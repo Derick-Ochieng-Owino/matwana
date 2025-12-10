@@ -8,7 +8,7 @@
   <style>
     /* Base Styles */
     :root {
-      --primary-color: #6a11cb;
+      --primary-color: #1e3c72;
       --secondary-color: #2575fc;
       --accent-color: #ff6b35;
       --success-color: #28a745;
@@ -716,7 +716,7 @@
 </head>
 <body>
   <div class="dashboard-container">
-    <!-- Enhanced Sidebar -->
+    <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
         <div class="passenger-avatar">
@@ -831,7 +831,7 @@
         </div>
       </div>
 
-      <!-- Featured Routes Section -->
+      <!-- Featured Routes -->
       <div class="featured-routes">
         <div class="section-header">
           <h2><i class="fas fa-fire"></i> Popular Routes Near You</h2>
@@ -893,7 +893,7 @@
             <i class="fas fa-route" style="font-size: 48px; color: var(--text-light); margin-bottom: 20px;"></i>
             <h3>No Routes Available</h3>
             <p>We're currently updating our routes. Please check back later.</p>
-            <button style="background: var(--primary-color); color: white; border: none; padding: 12px 25px; border-radius: 10px; margin-top: 20px; cursor: pointer;">
+            <button style="background: var(--primary-color); color: white; border: none; padding: 12px 25px; border-radius: 10px; margin-top: 20px; cursor: pointer;" data-action="refresh-routes">
               <i class="fas fa-sync-alt"></i> Refresh Routes
             </button>
           </div>
@@ -1034,9 +1034,6 @@
       // Update greeting based on time
       updateGreeting();
       
-      // Initialize tooltips
-      initTooltips();
-      
       // Load passenger data
       loadPassengerData();
     });
@@ -1052,64 +1049,18 @@
       
       const welcomeBanner = document.querySelector('.welcome-banner h1');
       if (welcomeBanner) {
-        welcomeBanner.innerHTML = `${greeting}, John!`;
-      }
-    }
-    
-    // Initialize tooltips
-    function initTooltips() {
-      const tooltipElements = document.querySelectorAll('[data-tooltip]');
-      tooltipElements.forEach(element => {
-        element.addEventListener('mouseenter', showTooltip);
-        element.addEventListener('mouseleave', hideTooltip);
-      });
-    }
-    
-    // Show tooltip
-    function showTooltip(event) {
-      const tooltipText = event.target.getAttribute('data-tooltip');
-      if (!tooltipText) return;
-      
-      const tooltip = document.createElement('div');
-      tooltip.className = 'tooltip';
-      tooltip.textContent = tooltipText;
-      tooltip.style.cssText = `
-        position: absolute;
-        background: #2d3436;
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        z-index: 10000;
-        white-space: nowrap;
-        pointer-events: none;
-        transform: translate(-50%, -100%);
-        top: ${event.clientY}px;
-        left: ${event.clientX}px;
-        margin-top: -10px;
-      `;
-      
-      document.body.appendChild(tooltip);
-    }
-    
-    // Hide tooltip
-    function hideTooltip() {
-      const tooltip = document.querySelector('.tooltip');
-      if (tooltip) {
-        tooltip.remove();
+        welcomeBanner.innerHTML = greeting + ', John!';
       }
     }
     
     // Load passenger data
     function loadPassengerData() {
-      // Simulate loading data
       console.log('Loading passenger data...');
       
       // Update wallet balance animation
       const walletAmount = document.querySelector('.wallet-balance .amount');
       if (walletAmount) {
         let currentAmount = parseInt(walletAmount.textContent.replace('KES ', '').replace(',', ''));
-        // Animate count-up effect
         animateCounter(walletAmount, currentAmount);
       }
     }
@@ -1118,66 +1069,51 @@
     function animateCounter(element, target) {
       let current = 0;
       const increment = target / 50;
-      const timer = setInterval(() => {
+      const timer = setInterval(function() {
         current += increment;
         if (current >= target) {
           current = target;
           clearInterval(timer);
         }
-        element.textContent = `KES ${Math.floor(current).toLocaleString()}`;
+        element.textContent = 'KES ' + Math.floor(current).toLocaleString();
       }, 30);
     }
     
     // Select route
     function selectRoute(routeId) {
-      console.log(`Selected route: ${routeId}`);
-      // In a real app, this would navigate to route details or open booking modal
-      showNotification(`Loading route details...`, 'info');
+      console.log('Selected route: ' + routeId);
+      showNotification('Loading route details...', 'info');
       
-      // Simulate loading
-      setTimeout(() => {
-        // This would typically redirect to route details page
-        // window.location.href = `{% url 'passenger_route_view' 0 %}`.replace('0', routeId);
-        showNotification(`Route loaded successfully`, 'success');
+      setTimeout(function() {
+        showNotification('Route loaded successfully', 'success');
       }, 500);
     }
     
     // Book route
     function bookRoute(routeId, event) {
-      event.stopPropagation(); // Prevent route selection when clicking book button
+      event.stopPropagation();
       
-      console.log(`Booking route: ${routeId}`);
-      showNotification(`Initiating booking for route ${routeId}...`, 'info');
+      console.log('Booking route: ' + routeId);
+      showNotification('Initiating booking for route ' + routeId + '...', 'info');
       
-      // In a real app, this would open a booking modal or navigate to booking page
-      setTimeout(() => {
-        const bookingModal = document.createElement('div');
-        bookingModal.style.cssText = `
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0,0,0,0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-        `;
+      setTimeout(function() {
+        const existingModal = document.querySelector('.booking-modal');
+        if (existingModal) existingModal.remove();
         
-        bookingModal.innerHTML = `
-          <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 90%;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-              <h3 style="color: #2d3436; margin: 0;">Confirm Booking</h3>
-              <button onclick="this.closest('.booking-modal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6c757d;">&times;</button>
-            </div>
-            <p>Booking for Route ${routeId}</p>
-            <p>Fare: KES 100</p>
-            <button onclick="confirmBooking('${routeId}')" style="background: #6a11cb; color: white; border: none; padding: 15px 30px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px;">
-              Confirm & Pay
-            </button>
-          </div>
-        `;
+        const bookingModal = document.createElement('div');
+        bookingModal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;';
+        
+        bookingModal.innerHTML = '<div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; width: 90%;">' +
+          '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">' +
+          '<h3 style="color: #2d3436; margin: 0;">Confirm Booking</h3>' +
+          '<button onclick="this.closest(\'.booking-modal\').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6c757d;">&times;</button>' +
+          '</div>' +
+          '<p>Booking for Route ' + routeId + '</p>' +
+          '<p>Fare: KES 100</p>' +
+          '<button onclick="confirmBooking(\'' + routeId + '\')" style="background: #6a11cb; color: white; border: none; padding: 15px 30px; border-radius: 10px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px;">' +
+          'Confirm & Pay' +
+          '</button>' +
+          '</div>';
         
         bookingModal.className = 'booking-modal';
         document.body.appendChild(bookingModal);
@@ -1186,21 +1122,19 @@
     
     // Confirm booking
     function confirmBooking(routeId) {
-      showNotification(`Processing payment for route ${routeId}...`, 'info');
+      showNotification('Processing payment for route ' + routeId + '...', 'info');
       
-      // Simulate payment processing
-      setTimeout(() => {
-        document.querySelector('.booking-modal').remove();
-        showNotification(`Booking confirmed! Your seat is reserved.`, 'success');
+      setTimeout(function() {
+        const modal = document.querySelector('.booking-modal');
+        if (modal) modal.remove();
+        showNotification('Booking confirmed! Your seat is reserved.', 'success');
         
-        // Update active bookings
         updateBookingsList(routeId);
       }, 1500);
     }
     
     // Update bookings list
     function updateBookingsList(routeId) {
-      // In a real app, this would fetch updated bookings from API
       console.log('Updating bookings list...');
     }
     
@@ -1214,39 +1148,19 @@
       };
       
       const notification = document.createElement('div');
-      notification.style.cssText = `
-        position: fixed;
-        bottom: 100px;
-        right: 30px;
-        background: white;
-        color: #2d3436;
-        padding: 15px 25px;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        z-index: 1000;
-        font-weight: 600;
-        border-left: 4px solid ${colors[type]};
-        animation: slideIn 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        max-width: 350px;
-      `;
+      notification.style.cssText = 'position: fixed; bottom: 100px; right: 30px; background: white; color: #2d3436; padding: 15px 25px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 1000; font-weight: 600; border-left: 4px solid ' + colors[type] + '; animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 10px; max-width: 350px;';
       
       const icon = type === 'success' ? 'fa-check-circle' : 
                   type === 'error' ? 'fa-exclamation-circle' : 
                   type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
       
-      notification.innerHTML = `
-        <i class="fas ${icon}" style="color: ${colors[type]}"></i>
-        <span>${message}</span>
-      `;
+      notification.innerHTML = '<i class="fas ' + icon + '" style="color: ' + colors[type] + '"></i><span>' + message + '</span>';
       
       document.body.appendChild(notification);
       
-      setTimeout(() => {
+      setTimeout(function() {
         notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
+        setTimeout(function() {
           document.body.removeChild(notification);
         }, 300);
       }, 3000);
@@ -1254,24 +1168,14 @@
     
     // Add CSS for animations
     const style = document.createElement('style');
-    style.textContent = `
-      @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-      }
-      @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-      }
-    `;
+    style.textContent = '@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }';
     document.head.appendChild(style);
     
     // Refresh routes
     document.addEventListener('click', function(event) {
       if (event.target.closest('[data-action="refresh-routes"]')) {
         showNotification('Refreshing available routes...', 'info');
-        // In real app, this would fetch updated routes from API
-        setTimeout(() => {
+        setTimeout(function() {
           showNotification('Routes updated successfully', 'success');
         }, 1000);
       }

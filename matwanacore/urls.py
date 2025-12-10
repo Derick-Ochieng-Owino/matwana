@@ -13,7 +13,7 @@ router.register('gps', api_views.GPSReportViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', views.login_view, name='login'),
-    path('signup/', views.signup_choice, name='signup_choice'),
+    path('signup/', views.signup, name='signup'),
     path('signup/passenger/', views.passenger_signup, name='signup_passenger'),
     path('signup/driver/', views.driver_signup, name='signup_driver'),
     path('signup/conductor/', views.conductor_signup, name='signup_conductor'),

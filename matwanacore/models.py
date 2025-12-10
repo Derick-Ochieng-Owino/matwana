@@ -11,6 +11,7 @@ class MatwanaUser(models.Model):
         ('sacco', 'Sacco Admin'),
         ('admin', 'Matwana Admin'),
     ]
+    sacco = models.ForeignKey('Sacco', on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=USER_TYPES)
     phone = models.CharField(max_length=30, blank=True, null=True)
@@ -23,9 +24,6 @@ class MatwanaUser(models.Model):
 
 
 class Route(models.Model):
-    """
-    Example: 'Thika Road' (a logical route), has many stops (ordered)
-    """
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     active = models.BooleanField(default=True)
@@ -34,11 +32,42 @@ class Route(models.Model):
     def __str__(self):
         return self.name
 
+class Sacco(models.Model):
+    # Foreign Key to the Sacco Admin User (MatwanaUser with role='sacco')
+    admin_user = models.ForeignKey(
+        MatwanaUser, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        limit_choices_to={'role': 'sacco'}, 
+        related_name='managed_saccos',
+        verbose_name='Sacco Administrator'
+    )
+    
+    name = models.CharField(max_length=150, unique=True)
+    registration_no = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(unique=True)
+    phone_number = models.CharField(max_length=20)
+    physical_address = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    
+    # Status fields (as seen in your dashboard table)
+    STATUS_CHOICES = [
+        ('Active', 'Active'),
+        ('Pending', 'Pending Review'),
+        ('Suspended', 'Suspended'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def total_vehicles(self):
+        return self.vehicles.count()
+
+    def __str__(self):
+        return self.name
 
 class RouteStop(models.Model):
-    """
-    Ordered stops for a route (pickups/dropoff points)
-    """
     route = models.ForeignKey(Route, on_delete=models.CASCADE, related_name='stops')
     name = models.CharField(max_length=150)  # e.g., "Ngara"
     order = models.PositiveIntegerField()  # sequence on the route
@@ -57,6 +86,7 @@ class Vehicle(models.Model):
     """
     Matatu / vehicle
     """
+    sacco = models.ForeignKey('Sacco', on_delete=models.SET_NULL, null=True, blank=True, related_name='vehicles')
     registration_number = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=150, blank=True)  # optional nickname
     capacity = models.PositiveIntegerField(default=14)

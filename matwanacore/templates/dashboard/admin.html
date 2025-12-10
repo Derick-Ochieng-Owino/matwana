@@ -1112,7 +1112,7 @@
         <button class="close-modal" onclick="closeModal('addSaccoModal')">&times;</button>
       </div>
       
-      <form id="saccoForm" onsubmit="submitSaccoForm(event)">
+      <form id="saccoForm" onsubmit="submitSaccoForm(event)">{% csrf_token %}
         <div class="form-group">
           <label for="saccoName">Sacco Name *</label>
           <input type="text" id="saccoName" class="form-control" required placeholder="Enter sacco name">
@@ -1165,7 +1165,7 @@
         <button class="close-modal" onclick="closeModal('addDriverModal')">&times;</button>
       </div>
       
-      <form id="driverForm" onsubmit="submitDriverForm(event)">
+      <form id="driverForm" onsubmit="submitDriverForm(event)">{% csrf_token %}
         <div class="form-group">
           <label for="driverSacco">Select Sacco *</label>
           <select id="driverSacco" class="form-control" required>
@@ -1241,7 +1241,7 @@
         <button class="close-modal" onclick="closeModal('addConductorModal')">&times;</button>
       </div>
       
-      <form id="conductorForm" onsubmit="submitConductorForm(event)">
+      <form id="conductorForm" onsubmit="submitConductorForm(event)">{% csrf_token %}
         <div class="form-group">
           <label for="conductorSacco">Select Sacco *</label>
           <select id="conductorSacco" class="form-control" required>
