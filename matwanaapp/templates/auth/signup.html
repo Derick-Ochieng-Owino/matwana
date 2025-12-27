@@ -1,0 +1,546 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Matwana Matatu Management</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Additional styles for phone number input */
+        .phone-input-container:focus-within .phone-prefix {
+            border-color: var(--primary-purple);
+            border-right: none;
+        }
+        
+        .phone-input-container .input-with-icon input:focus {
+            border-left: 2px solid var(--primary-purple);
+            margin-left: -2px;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-image-section">
+        <div class="auth-image-overlay">
+            <h2>Join Matwana</h2>
+            <p>Create your account to start managing your matatu business efficiently with our powerful platform.</p>
+        </div>
+    </div>
+
+    <div class="auth-content-section">
+        <div class="auth-form-wrapper">
+            <div class="auth-form-container">
+                <img class="auth-logo" src="{% static 'images/logo.png' %}" alt="Matwana Logo">
+                <h1 class="auth-title">Create Account</h1>
+                <p class="auth-subtitle">Sign up to start managing your matatu business with our powerful platform</p>
+
+                {% if form.non_field_errors %}
+                    <div class="auth-error-list">
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="POST" action="{% url 'signup' %}" class="auth-form" id="signupForm">
+                    {% csrf_token %}
+                    
+                    <!-- Hidden field for formatted phone number -->
+                    <input type="hidden" name="formatted_phone" id="formattedPhone">
+
+                    <!-- ID Number -->
+                    <div class="form-group">
+                        <label for="id_id_number">ID Number</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" 
+                                   id="id_id_number" 
+                                   name="id_number" 
+                                   placeholder="Enter your national ID number"
+                                   value="{{ form.id_number.value|default:'' }}"
+                                   required>
+                        </div>
+                        {% if form.id_number.errors %}
+                            <span class="field-error">{{ form.id_number.errors.0 }}</span>
+                        {% endif %}
+                        <div class="focus-border"></div>
+                    </div>
+
+                    <!-- Name Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_first_name">First Name</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" 
+                                       id="id_first_name" 
+                                       name="first_name" 
+                                       placeholder="First name"
+                                       value="{{ form.first_name.value|default:'' }}"
+                                       required>
+                            </div>
+                            {% if form.first_name.errors %}
+                                <span class="field-error">{{ form.first_name.errors.0 }}</span>
+                            {% endif %}
+                            <div class="focus-border"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_last_name">Last Name</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" 
+                                       id="id_last_name" 
+                                       name="last_name" 
+                                       placeholder="Last name"
+                                       value="{{ form.last_name.value|default:'' }}"
+                                       required>
+                            </div>
+                            {% if form.last_name.errors %}
+                                <span class="field-error">{{ form.last_name.errors.0 }}</span>
+                            {% endif %}
+                            <div class="focus-border"></div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_phone_number">Phone Number</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-phone"></i>
+                                <input type="tel" 
+                                    id="id_phone_number" 
+                                    name="phone_number" 
+                                    placeholder="0712 345 678"
+                                    value="{{ form.phone_number.value|default:'' }}"
+                                    maxlength="13"
+                                    required>
+                                <div class="focus-border"></div>
+                            </div>
+                            <small style="color: var(--text-light); font-size: 0.75rem; display: block; margin-top: 4px;">
+                                Format: 07XX XXX XXX or 01XX XXX XXX
+                            </small>
+                            {% if form.phone_number.errors %}
+                                <span class="field-error">{{ form.phone_number.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_email">Email Address</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" 
+                                    id="id_email" 
+                                    name="email" 
+                                    placeholder="name@example.com"
+                                    value="{{ form.email.value|default:'' }}"
+                                    required>
+                                <div class="focus-border"></div>
+                            </div>
+                            {% if form.email.errors %}
+                                <span class="field-error">{{ form.email.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="id_password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" 
+                                   id="id_password" 
+                                   name="password" 
+                                   placeholder="Create a strong password" 
+                                   required>
+                            <button type="button" class="password-toggle" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-bar" id="strengthBar"></div>
+                        </div>
+                        {% if form.password.errors %}
+                            <span class="field-error">{{ form.password.errors.0 }}</span>
+                        {% endif %}
+                        <div class="focus-border"></div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label for="id_confirm_password">Confirm Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" 
+                                   id="id_confirm_password" 
+                                   name="confirm_password" 
+                                   placeholder="Confirm your password" 
+                                   required>
+                            <button type="button" class="password-toggle" id="toggleConfirmPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="password-match" id="passwordMatch"></span>
+                        {% if form.confirm_password.errors %}
+                            <span class="field-error">{{ form.confirm_password.errors.0 }}</span>
+                        {% endif %}
+                        <div class="focus-border"></div>
+                    </div>
+
+                    <!-- Password Rules -->
+                    <div class="password-rules" id="passwordRules">
+                        <p>Password must contain:</p>
+                        <ul>
+                            <li id="ruleLength">At least 8 characters</li>
+                            <li id="ruleUppercase">One uppercase letter</li>
+                            <li id="ruleLowercase">One lowercase letter</li>
+                            <li id="ruleNumber">One number</li>
+                            <li id="ruleSpecial">One special character</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn" id="submitBtn">
+                        <i class="fas fa-user-plus" style="margin-right: 8px;"></i>
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="auth-form-footer">
+                    Already have an account?
+                    <a href="{% url 'login' %}" class="auth-link">Sign in here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('signupForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const passwordInput = document.getElementById('id_password');
+    const confirmPasswordInput = document.getElementById('id_confirm_password');
+    const togglePassword = document.getElementById('togglePassword');
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const strengthBar = document.getElementById('strengthBar');
+    const passwordMatch = document.getElementById('passwordMatch');
+    const phoneInput = document.getElementById('id_phone_number');
+    const formattedPhoneInput = document.getElementById('formattedPhone');
+
+    // Phone number formatting function
+    function formatPhoneNumber(phone) {
+        // Remove all non-digits
+        let cleaned = phone.replace(/\D/g, '');
+        
+        // If it starts with 0, remove it (for Kenya numbers)
+        if (cleaned.startsWith('0')) {
+            cleaned = cleaned.substring(1);
+        }
+        
+        // Ensure it's the right length (9 digits for Kenya)
+        if (cleaned.length > 9) {
+            cleaned = cleaned.substring(0, 9);
+        }
+        
+        // Format with spaces for display: XXX XXX XXX
+        if (cleaned.length > 0) {
+            if (cleaned.length <= 3) {
+                return cleaned;
+            } else if (cleaned.length <= 6) {
+                return cleaned.substring(0, 3) + ' ' + cleaned.substring(3);
+            } else {
+                return cleaned.substring(0, 3) + ' ' + cleaned.substring(3, 6) + ' ' + cleaned.substring(6, 9);
+            }
+        }
+        return '';
+    }
+
+    // Function to get full phone number with +254 prefix
+    function getFullPhoneNumber(phone) {
+        let cleaned = phone.replace(/\D/g, '');
+        
+        // Remove leading 0 if present
+        if (cleaned.startsWith('0')) {
+            cleaned = cleaned.substring(1);
+        }
+        
+        // Return full number with +254 prefix
+        return '+254' + cleaned;
+    }
+
+    // Validate Kenyan phone number
+    function isValidKenyanPhone(phone) {
+        let cleaned = phone.replace(/\D/g, '');
+        
+        // Remove leading 0 if present
+        if (cleaned.startsWith('0')) {
+            cleaned = cleaned.substring(1);
+        }
+        
+        // Check if it's a valid Kenyan mobile number (starts with 7 or 1, 9 digits total)
+        if (cleaned.length !== 9) return false;
+        
+        const firstDigit = cleaned.charAt(0);
+        return firstDigit === '7' || firstDigit === '1';
+    }
+
+    // Phone input event listener
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        let cursorPos = e.target.selectionStart;
+        
+        // Remove all non-digits to get current cleaned value
+        const cleaned = value.replace(/\D/g, '');
+        
+        // Format the phone number
+        const formatted = formatPhoneNumber(cleaned);
+        
+        // Update the input value
+        e.target.value = formatted;
+        
+        // Adjust cursor position
+        const diff = formatted.length - value.length;
+        if (diff > 0) {
+            cursorPos += diff;
+        }
+        e.target.setSelectionRange(cursorPos, cursorPos);
+        
+        // Update hidden field with full phone number
+        formattedPhoneInput.value = getFullPhoneNumber(cleaned);
+    });
+
+    // Phone input validation on blur
+    phoneInput.addEventListener('blur', function() {
+        const value = this.value.replace(/\D/g, '');
+        
+        if (value && !isValidKenyanPhone(value)) {
+            this.style.borderColor = 'var(--error-red)';
+            const errorSpan = this.parentElement.parentElement.querySelector('.phone-error') || 
+                             document.createElement('span');
+            errorSpan.className = 'field-error phone-error';
+            errorSpan.textContent = 'Please enter a valid Kenyan phone number (starting with 7 or 1)';
+            if (!this.parentElement.parentElement.querySelector('.phone-error')) {
+                this.parentElement.parentElement.appendChild(errorSpan);
+            }
+        } else {
+            this.style.borderColor = 'var(--border-color)';
+            const errorSpan = this.parentElement.parentElement.querySelector('.phone-error');
+            if (errorSpan) {
+                errorSpan.remove();
+            }
+        }
+    });
+
+    // Phone number formatting function
+function formatPhoneNumber(phone) {
+    // Remove all non-digits
+    let cleaned = phone.replace(/\D/g, '');
+    
+    // If it starts with 0, remove it (for Kenya numbers)
+    if (cleaned.startsWith('0')) {
+        cleaned = cleaned.substring(1);
+    }
+    
+    // Ensure it's the right length (9 digits for Kenya)
+    if (cleaned.length > 9) {
+        cleaned = cleaned.substring(0, 9);
+    }
+    
+    // Format with spaces for display: XXX XXX XXX
+    if (cleaned.length > 0) {
+        if (cleaned.length <= 3) {
+            return cleaned;
+        } else if (cleaned.length <= 6) {
+            return cleaned.substring(0, 3) + ' ' + cleaned.substring(3);
+        } else {
+            return cleaned.substring(0, 3) + ' ' + cleaned.substring(3, 6) + ' ' + cleaned.substring(6, 9);
+        }
+    }
+    return '';
+}
+
+// Function to get full phone number with +254 prefix
+function getFullPhoneNumber(phone) {
+    let cleaned = phone.replace(/\D/g, '');
+    
+    // Remove leading 0 if present
+    if (cleaned.startsWith('0')) {
+        cleaned = cleaned.substring(1);
+    }
+    
+    // Return full number with +254 prefix
+    return '+254' + cleaned;
+}
+
+// Phone input event listener
+phoneInput.addEventListener('input', function(e) {
+    let value = e.target.value;
+    let cursorPos = e.target.selectionStart;
+    
+    // Remove all non-digits to get current cleaned value
+    const cleaned = value.replace(/\D/g, '');
+    
+    // Format the phone number
+    const formatted = formatPhoneNumber(cleaned);
+    
+    // Update the input value
+    e.target.value = formatted;
+    
+    // Adjust cursor position
+    const diff = formatted.length - value.length;
+    if (diff > 0) {
+        cursorPos += diff;
+    }
+    e.target.setSelectionRange(cursorPos, cursorPos);
+    
+    // Update hidden field with full phone number
+    formattedPhoneInput.value = getFullPhoneNumber(cleaned);
+});
+
+// Add focus class to phone container when input is focused
+phoneInput.addEventListener('focus', function() {
+    this.closest('.phone-input-container').classList.add('focused');
+});
+
+phoneInput.addEventListener('blur', function() {
+    this.closest('.phone-input-container').classList.remove('focused');
+});
+
+    // Password toggle functionality
+    function setupPasswordToggle(toggleBtn, inputField) {
+        toggleBtn.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            const type = inputField.getAttribute('type') === 'password' ? 'text' : 'password';
+            inputField.setAttribute('type', type);
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        });
+    }
+
+    setupPasswordToggle(togglePassword, passwordInput);
+    setupPasswordToggle(toggleConfirmPassword, confirmPasswordInput);
+
+    // Password strength checker
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        const rules = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password),
+            special: /[^A-Za-z0-9]/.test(password)
+        };
+
+        document.getElementById('ruleLength').style.color = rules.length ? '#10b981' : '#6b7280';
+        document.getElementById('ruleUppercase').style.color = rules.uppercase ? '#10b981' : '#6b7280';
+        document.getElementById('ruleLowercase').style.color = rules.lowercase ? '#10b981' : '#6b7280';
+        document.getElementById('ruleNumber').style.color = rules.number ? '#10b981' : '#6b7280';
+        document.getElementById('ruleSpecial').style.color = rules.special ? '#10b981' : '#6b7280';
+
+        if (rules.length) strength++;
+        if (rules.uppercase) strength++;
+        if (rules.lowercase) strength++;
+        if (rules.number) strength++;
+        if (rules.special) strength++;
+
+        strengthBar.className = 'strength-bar';
+        if (strength <= 2) strengthBar.classList.add('strength-weak');
+        else if (strength <= 4) strengthBar.classList.add('strength-medium');
+        else strengthBar.classList.add('strength-strong');
+    }
+
+    // Password match checker
+    function checkPasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        if (confirmPassword === '') {
+            passwordMatch.textContent = '';
+            passwordMatch.className = 'password-match';
+            return;
+        }
+        
+        if (password === confirmPassword) {
+            passwordMatch.textContent = '✓ Passwords match';
+            passwordMatch.className = 'password-match valid';
+        } else {
+            passwordMatch.textContent = '✗ Passwords do not match';
+            passwordMatch.className = 'password-match invalid';
+        }
+    }
+
+    // Event listeners for password fields
+    passwordInput.addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+        checkPasswordMatch();
+    });
+
+    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        // Prevent default to validate first
+        e.preventDefault();
+        
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const phoneValue = phoneInput.value.replace(/\D/g, '');
+        
+        // Validate phone number
+        if (!isValidKenyanPhone(phoneValue)) {
+            alert('Please enter a valid Kenyan phone number starting with 7 or 1 (e.g., 712 345 678)');
+            phoneInput.focus();
+            return;
+        }
+        
+        // Check password match
+        if (password !== confirmPassword) {
+            alert('Passwords do not match. Please ensure both passwords are identical.');
+            confirmPasswordInput.focus();
+            return;
+        }
+
+        // Check password strength
+        const rules = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password)
+        };
+
+        const strength = Object.values(rules).filter(Boolean).length;
+        
+        if (strength < 3) {
+            alert('Please use a stronger password. Your password should include at least:\n• 8 characters\n• One uppercase letter\n• One number');
+            passwordInput.focus();
+            return;
+        }
+
+        // Update hidden phone field with final formatted value
+        formattedPhoneInput.value = getFullPhoneNumber(phoneValue);
+        
+        // Show loading state
+        submitBtn.classList.add('loading');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>Creating Account...';
+        
+        // Submit the form after validation
+        setTimeout(() => {
+            form.submit();
+        }, 100);
+    });
+
+    // Initialize phone number formatting if there's an existing value
+    if (phoneInput.value) {
+        const formatted = formatPhoneNumber(phoneInput.value);
+        phoneInput.value = formatted;
+        formattedPhoneInput.value = getFullPhoneNumber(phoneInput.value.replace(/\D/g, ''));
+    }
+});
+</script>
+</body>
+</html>
